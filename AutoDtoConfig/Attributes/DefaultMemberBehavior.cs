@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace AutoDto.Attributes
+namespace AutoDtoConfig.Attributes
 {
     public enum DefaultMemberBehavior
     {

@@ -4,9 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AutoDtoConfig.Attributes;
 
 namespace AutoDto.Test.Models
 {
+    [AutoDtoConfiguration]
     internal class TestDbContext : DbContext
     {
         public virtual DbSet<TestClass1> TestClass1 { get; set; }

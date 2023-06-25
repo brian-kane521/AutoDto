@@ -1,4 +1,4 @@
-﻿namespace AutoDto.Attributes
+﻿namespace AutoDtoConfig.Attributes
 {
     public enum ClassDiscoveryBehavior
     {
