@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32929.385
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoDto", "AutoDto\AutoDto.csproj", "{B0DDB669-1DAD-4B0F-B86F-CAD9DF7230AB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoDto.Test", "AutoDto.Test\AutoDto.Test.csproj", "{29DEC037-7FB4-4B69-AF7D-3C9662048B7D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B0DDB669-1DAD-4B0F-B86F-CAD9DF7230AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B0DDB669-1DAD-4B0F-B86F-CAD9DF7230AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B0DDB669-1DAD-4B0F-B86F-CAD9DF7230AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B0DDB669-1DAD-4B0F-B86F-CAD9DF7230AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{29DEC037-7FB4-4B69-AF7D-3C9662048B7D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{29DEC037-7FB4-4B69-AF7D-3C9662048B7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{29DEC037-7FB4-4B69-AF7D-3C9662048B7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{29DEC037-7FB4-4B69-AF7D-3C9662048B7D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DAB75BEE-7D9A-4A02-86B9-E1ED0615B219}
+	EndGlobalSection
+EndGlobal
