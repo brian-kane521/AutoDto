@@ -2,6 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <PropertyGroup>
+    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+    <CompilerGeneratedFilesOutputPath>.</CompilerGeneratedFilesOutputPath>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,10 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference 
-      Include="..\AutoDto\AutoDto.csproj" 
-      OutputItemType="Analyzer"
-      ReferenceOutputAssembly="false"/>
+    <ProjectReference Include="..\AutoDto\AutoDto.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 
 </Project>

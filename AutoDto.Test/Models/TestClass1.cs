@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AutoDto.Test
+namespace AutoDto.Test.Models
 {
     internal class TestClass1
     {
@@ -15,6 +15,7 @@ namespace AutoDto.Test
         public double TestDouble { get; set; }
         public decimal TestDecimal { get; set; }
         public virtual TestChildClass1 TestChildClass1 { get; set; } = null!;
+        public virtual TestChildClass1? TestNullableChildClass1 { get; set; }
         public virtual ICollection<TestChildClass1> TestChildClass1Collection { get; set; } = new List<TestChildClass1>();
     }
 }

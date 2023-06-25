@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AutoDto.Test
+namespace AutoDto.Test.Models
 {
-    internal class TestClass2
+    internal class TestEmptyClass
     {
     }
 }
