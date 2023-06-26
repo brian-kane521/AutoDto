@@ -5,10 +5,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoDtoConfig.Attributes;
+using AutoDtoConfig;
 
 namespace AutoDto.Test.Models
 {
-    [AutoDtoConfiguration]
+    [AutoDtoConfiguration(
+        ClassDiscoveryBehavior= ClassDiscoveryBehavior.ExcludeAll, 
+        DtoNameGeneratorType = typeof(DefaultDtoNameGenerator), 
+        RequestTypeDefaultMemberBehaviorResolver = typeof(DefaultRequestTypeDefaultBehaviorResolver), 
+        RequestTypes = GeneratedRequestType.Create, 
+        ResponseTypes = GeneratedResponseType.All)]
     internal class TestDbContext : DbContext
     {
         public virtual DbSet<TestClass1> TestClass1 { get; set; }

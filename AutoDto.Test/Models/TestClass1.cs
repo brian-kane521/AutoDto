@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AutoDtoConfig.Attributes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace AutoDto.Test.Models
 {
+    [AutoDtoInclude]
     internal class TestClass1
     {
         public int TestInt { get; set; }

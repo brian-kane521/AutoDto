@@ -19,6 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AutoDtoConfig\AutoDtoConfig.csproj" />
     <ProjectReference Include="..\AutoDto\AutoDto.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 
