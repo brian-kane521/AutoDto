@@ -5,7 +5,7 @@ using System.Text;
 
 namespace AutoDtoConfig.Interfaces
 {
-    internal interface IDtoNameGenerator
+    public interface IDtoNameGenerator
     {
         string GenerateRequestName(string baseClassName, GeneratedRequestType requestType);
 

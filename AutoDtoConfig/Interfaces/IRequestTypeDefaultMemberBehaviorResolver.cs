@@ -5,7 +5,7 @@ using System.Text;
 
 namespace AutoDtoConfig.Interfaces
 {
-    internal interface IRequestTypeDefaultMemberBehaviorResolver
+    public interface IRequestTypeDefaultMemberBehaviorResolver
     {
         DefaultMemberBehavior GetDefaultBehaviorForRequestType(GeneratedRequestType requestType);
         DefaultMemberBehavior GetDefaultBehaviorForResponseType(GeneratedResponseType responseType);
