@@ -1,5 +1,4 @@
 ﻿using AutoDtoConfig.Attributes;
-using AutoDtoConfig.Interfaces;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -13,23 +12,17 @@ using System.Text;
 namespace AutoDto
 {
     [Generator]
-    public class AutoDtoSourceGenerator : ISourceGenerator
+    public partial class AutoDtoSourceGenerator : ISourceGenerator
     {
         private AutoDtoConfigurationAttribute configuration;
-        private IDtoNameGenerator? dtoNameGenerator;
-        private IRequestTypeDefaultMemberBehaviorResolver? requestTypeDefaultMemberBehaviorResolver;
         public AutoDtoSourceGenerator(AutoDtoConfigurationAttribute configuration)
         {
             this.configuration = configuration;
-            dtoNameGenerator = null;
-            requestTypeDefaultMemberBehaviorResolver = null;
         }
 
         public AutoDtoSourceGenerator()
         {
             configuration = new AutoDtoConfigurationAttribute();
-            dtoNameGenerator = null;
-            requestTypeDefaultMemberBehaviorResolver = null;
         }
 
         public void Execute(GeneratorExecutionContext context)
@@ -52,35 +45,120 @@ namespace AutoDto
             {
                 configuration = userConfig;
             }
-            try
-            {
-                dtoNameGenerator = (IDtoNameGenerator)Activator.CreateInstance(configuration.DtoNameGeneratorType);
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine(ex.ToString());
-            }
-            requestTypeDefaultMemberBehaviorResolver = 
-                (IRequestTypeDefaultMemberBehaviorResolver)Activator.CreateInstance(configuration.RequestTypeDefaultMemberBehaviorResolver);
-
-            if (dtoNameGenerator == null)
-            {
-                Console.Error.WriteLine("Unable to create instance of IDtoNameGenerator");
-                return;
-            }
-            if (dtoNameGenerator == null)
-            {
-                Console.Error.WriteLine("Unable to create instance of IRequestTypeDefaultMemberBehaviorResolver");
-                return;
-            }
 
             var typesToScaffold = GetTypesToScaffoldFromDbContext(dbContextType);
 
-            //var dtos = ScaffoldDtos(typesToScaffold);
-            //foreach (var dto in dtos)
-            //{
-            //    context.AddSource(dto.ClassFileName, dto.SourceCode);
-            //}
+            var scaffoldedDtos = new List<ScaffoldedDto>();
+            var mappedRequestTypeNames = new List<RequestTypeNameMappings>();
+            foreach (var requestType in GetRequestTypesToScaffold())
+            {
+                var mappedTypeNames = new Dictionary<string, string>();
+                foreach (var scaffoldInfo in typesToScaffold)
+                {
+                    var excludedByIgnore = scaffoldInfo.IgnoreAttribute != null
+                            && (scaffoldInfo.IgnoreAttribute.RequestTypesWherePropertyIsIgnored | requestType) > 0;
+                    if (excludedByIgnore)
+                    {
+                        continue;
+                    }
+                    var requestDto = ScaffoldRequestDto(requestType, scaffoldInfo);
+                    scaffoldedDtos.Add(requestDto);
+                    mappedTypeNames.Add(requestDto.BaseClassName, requestDto.ClassName);
+                }
+                mappedRequestTypeNames.Add(new RequestTypeNameMappings
+                {
+                    RequestType = requestType,
+                    MappedTypeNames = mappedTypeNames,
+                });
+            }
+
+            var mappedResponseTypeNames = new List<ResponseTypeNameMappings>();
+            foreach (var responseType in GetResponseTypesToScaffold())
+            {
+                var mappedTypeNames = new Dictionary<string, string>();
+                foreach (var scaffoldInfo in typesToScaffold)
+                {
+                    var excludedByIgnore = scaffoldInfo.IgnoreAttribute != null
+                            && (scaffoldInfo.IgnoreAttribute.ResponseTypesWherePropertyIsIgnored | responseType) > 0;
+                    if (excludedByIgnore)
+                    {
+                        continue;
+                    }
+                    var responseDto = ScaffoldResponseDto(responseType, scaffoldInfo);
+                    scaffoldedDtos.Add(responseDto);
+                    mappedTypeNames.Add(responseDto.BaseClassName, responseDto.ClassName);
+                }
+                mappedResponseTypeNames.Add(new ResponseTypeNameMappings
+                {
+                    ResponseType = responseType,
+                    MappedTypeNames = mappedTypeNames,
+                });
+            }
+
+            foreach (var dto in scaffoldedDtos)
+            {
+                try
+                {
+                    var source = GenerateSourceFromScaffoldedDto(new DtoSourceCodeMetadata
+                    {
+                        ScaffoldedDto = dto,
+                        RequestTypeNameMappings = mappedRequestTypeNames,
+                        ResponseTypeNameMappings = mappedResponseTypeNames,
+                    });
+                    context.AddSource(dto.ClassFileName, source);
+                }
+                catch (Exception ex)
+                {
+                    Console.Error.WriteLine(ex.ToString());
+                }
+            }
+        }
+
+        internal string GenerateSourceFromScaffoldedDto(DtoSourceCodeMetadata dtoSourceData)
+        {
+            var sourceBuilder = new StringBuilder($@"// <auto-generated />
+#nullable enable
+
+using System;
+using System.Collections.Generic;
+
+namespace AutoDto
+{{
+{"\t"}public partial class {dtoSourceData.ScaffoldedDto.ClassName}
+{"\t"}{{
+");
+            Dictionary<string, string> nameMappings;
+            if (dtoSourceData.ScaffoldedDto.IsRequestType)
+            {
+                nameMappings = dtoSourceData.RequestTypeNameMappings
+                    .First(nm => nm.RequestType.Equals(dtoSourceData.ScaffoldedDto.RequestType))
+                    .MappedTypeNames;
+            }
+            else
+            {
+                nameMappings = dtoSourceData.ResponseTypeNameMappings
+                    .First(nm => nm.ResponseType.Equals(dtoSourceData.ScaffoldedDto.ResponseType))
+                    .MappedTypeNames;
+            }
+            foreach (var property in dtoSourceData.ScaffoldedDto.Properties)
+            {
+                string generatedTypeName;
+                if (nameMappings.ContainsKey(property.TypeName))
+                {
+                    generatedTypeName = nameMappings[property.TypeName];
+                }
+                else
+                {
+                    generatedTypeName = property.TypeName;
+                }
+                sourceBuilder.AppendLine("\t\t" + property.Template.Replace("{TypeName}", generatedTypeName));
+            }
+
+            sourceBuilder.AppendLine("\t}");
+            sourceBuilder.AppendLine("}");
+            sourceBuilder.AppendLine("");
+            sourceBuilder.AppendLine("#nullable restore");
+            return sourceBuilder.ToString();
         }
 
         public List<GeneratedRequestType> GetRequestTypesToScaffold()
@@ -92,7 +170,7 @@ namespace AutoDto
                 GeneratedRequestType.Update, 
                 GeneratedRequestType.Delete })
             {
-                if ((requestType | configuration.RequestTypes) > 0)
+                if ((requestType | configuration.GenerateRequestTypes) > 0)
                 {
                     requestTypes.Add(requestType);
                 }
@@ -110,7 +188,7 @@ namespace AutoDto
                 GeneratedResponseType.Delete,
                 GeneratedResponseType.Generic })
             {
-                if ((requestType | configuration.ResponseTypes) > 0)
+                if ((requestType | configuration.GenerateResponseTypes) > 0)
                 {
                     requestTypes.Add(requestType);
                 }
@@ -145,19 +223,7 @@ namespace AutoDto
                 var propertyInfo = constructedObject.GetType().GetProperty(argName);
                 try
                 {
-                    if (argValue.Type != null && argValue.Type.Name.Equals("Type"))
-                    {
-                        var str = argValue.ToCSharpString();
-                        if (argValue.Value != null)
-                        {
-                            var specifiedType = argValue.Value;
-                            propertyInfo.SetValue(constructedObject, argValue.Value);
-                        }
-                    }
-                    else
-                    {
-                        propertyInfo.SetValue(constructedObject, argValue.Value);
-                    }
+                    propertyInfo.SetValue(constructedObject, argValue.Value);
                 }
                 catch (Exception ex)
                 {
@@ -202,10 +268,12 @@ namespace AutoDto
                                 continue;
                             }
                         }
-                        var properties = GetPropertiesToScaffold(typeSymbol);
+                        var classConfiguration = GetAttributeInstanceFromSymbol<AutoDtoConfigurationAttribute>(baseClass);
+                        var properties = GetPropertiesToScaffold(baseClass);
                         typesToScaffold.Add(new TypeScaffoldingInfo
                         {
                             BaseType = baseClass!,
+                            ClassConfiguration = classConfiguration,
                             IgnoreAttribute = ignoreAttribute,
                             IncludeAttribute = includeAttribute,
                             Properties = properties,
@@ -214,12 +282,6 @@ namespace AutoDto
                 }
             }
             return typesToScaffold;
-        }
-
-        public class ScaffoldedDto
-        {
-            public string ClassFileName { get; set; } = null!;
-            public string SourceCode { get; set; } = null!;
         }
 
         internal List<PropertyScaffoldingInfo> GetPropertiesToScaffold(ITypeSymbol baseType)
@@ -249,109 +311,155 @@ namespace AutoDto
             return properties;
         }
 
-        //public ScaffoldedMember? GetScaffoldedRequestProperty(GeneratedRequestType requestType, IPropertySymbol propertySymbol, List<TypeScaffoldingInfo> typesToScaffold)
-        //{
-        //    switch (propertySymbol.Type.TypeKind)
-        //    {
-        //        case TypeKind.Class:
-        //            string nullableAnnotation = string.Empty;
-        //            string valueInitializer = " = null!;";
-        //            string typeName;
-        //            if (typesToScaffold.Any(type => type.Name.Equals(propertySymbol.Type.Name)))
-        //            {
-        //                typeName = $"{propertySymbol.Type.Name}Dto";
-        //            }
-        //            else
-        //            {
-        //                typeName = propertySymbol.Type.OriginalDefinition.ToString();
-        //            }
-        //            if (propertySymbol.Type.NullableAnnotation.Equals(NullableAnnotation.Annotated))
-        //            {
-        //                nullableAnnotation = "?";
-        //                valueInitializer = "";
-        //            }
-        //            return new ScaffoldedMember
-        //            {
-        //                BaseTypeDeclaration = $"{typeName}{nullableAnnotation}",
-        //                BaseName = propertySymbol.Name,
-        //                ValueInitializer = valueInitializer,
-        //            };
-        //            //sourceBuilder.AppendLine($"\t\tpublic {typeName}{nullableAnnotation} {propertySymbol.Name} {{ get; set; }}{valueInitializer}");
-        //        case TypeKind.Array:
-        //            var arrayType = (IArrayTypeSymbol)propertySymbol.Type;
-        //            var elementType = arrayType.ElementType;
-        //            if (elementType.Kind.Equals(TypeKind.Class) && typesToScaffold.Any(type => type.BaseType.Name.Equals(elementType.Name)))
-        //            {
-        //                return new ScaffoldedMember
-        //                {
-        //                    BaseTypeDeclaration = elementType.Name
-        //                }
-        //                sourceBuilder.AppendLine($"\t\tpublic {elementType.Name}Dto[] {propertySymbol.Name} {{ get; set; }} = new {elementType.Name}Dto[0];");
-        //            }
-        //            else
-        //            {
-        //                sourceBuilder.AppendLine($"\t\tpublic {propertySymbol.Type.OriginalDefinition} {propertySymbol.Name} {{ get; set; }} = new {elementType.OriginalDefinition}[0];");
-        //            }
-        //            break;
-        //        case TypeKind.Interface:
-        //            if (propertySymbol.Type is INamedTypeSymbol && propertySymbol.Type.Name.Equals("ICollection"))
-        //            {
-        //                var typeArguments = ((INamedTypeSymbol)propertySymbol.Type).TypeArguments;
-        //                var baseClass = typeArguments.FirstOrDefault();
-        //                if (baseClass != null && typesToScaffold.Any(type => type.Name.Equals(baseClass.Name)))
-        //                {
-        //                    sourceBuilder.AppendLine($"\t\tpublic ICollection<{baseClass.Name}Dto> {propertySymbol.Name} {{ get; set; }} = new List<{baseClass.Name}Dto>();");
-        //                }
-        //                else
-        //                {
-        //                    sourceBuilder.AppendLine($"\t\tpublic {propertySymbol.Type.OriginalDefinition} {propertySymbol.Name} {{ get; set; }} = new {propertySymbol.Type.OriginalDefinition}();");
-        //                }
-        //            }
-        //            break;
-        //    }
-        //}
-
-        public List<ScaffoldedDto> ScaffoldDtos(List<ITypeSymbol> typesToScaffold)
+        internal ScaffoldedMember? GetScaffoldedProperty(PropertyScaffoldingInfo propertyScaffoldingInfo)
         {
-            var dtos = new List<ScaffoldedDto>();
-            foreach (var scaffoldType in typesToScaffold)
+            var propertySymbol = propertyScaffoldingInfo.BaseProperty;
+            string typeName;
+            switch (propertySymbol.Type.TypeKind)
             {
-                var sourceBuilder = new StringBuilder($@"// <auto-generated />
-#nullable enable
-
-using System;
-using System.Collections.Generic;
-
-namespace AutoDto
-{{
-{"\t"}public partial class {scaffoldType.Name}Dto
-{"\t"}{{
-");
-                foreach (var memberPropertyInfo in GetPropertiesToScaffold(scaffoldType))
-                {
-                    var memberProperty = memberPropertyInfo.BaseProperty;
-                    if (memberProperty.Type.IsValueType)
+                case TypeKind.Class:
+                    string nullableAnnotation = string.Empty;
+                    string valueInitializer = " = null!;";
+                    if (propertySymbol.Type.NullableAnnotation.Equals(NullableAnnotation.Annotated))
                     {
-                        var memberLine = $"\t\tpublic {memberProperty.Type} {memberProperty.Name} {{ get; set; }}";
-                        sourceBuilder.AppendLine(memberLine);
+                        nullableAnnotation = "?";
+                        valueInitializer = "";
+                    }
+                    if (propertySymbol.Type.OriginalDefinition.ToString().Contains("."))
+                    {
+                        typeName = propertySymbol.Type.Name;
                     }
                     else
                     {
-                        
+                        typeName = propertySymbol.Type.OriginalDefinition.ToString();
+                    }
+                    return new ScaffoldedMember
+                    {
+                        TypeName = typeName,
+                        Template = $"public {{TypeName}}{nullableAnnotation} {propertySymbol.Name} {{ get; set; }}{valueInitializer}"
+                    };
+                case TypeKind.Interface:
+                    if (propertySymbol.Type is INamedTypeSymbol && propertySymbol.Type.Name.Equals("ICollection"))
+                    {
+                        var typeArguments = ((INamedTypeSymbol)propertySymbol.Type).TypeArguments;
+                        var baseClass = typeArguments.FirstOrDefault();
+                        if (baseClass != null)
+                        {
+                            return new ScaffoldedMember
+                            {
+                                TypeName = baseClass.Name,
+                                Template = $"public ICollection<{{TypeName}}> {propertySymbol.Name} {{ get; set; }} = new List<{{TypeName}}>();"
+                            };
+                        }
+                        else
+                        {
+                            if (propertySymbol.Type.OriginalDefinition.ToString().Contains("."))
+                            {
+                                typeName = propertySymbol.Type.Name;
+                            }
+                            else
+                            {
+                                typeName = propertySymbol.Type.OriginalDefinition.ToString();
+                            }
+                            return new ScaffoldedMember
+                            {
+                                TypeName = typeName,
+                                Template = $"public {propertySymbol.Type.OriginalDefinition} {propertySymbol.Name} {{ get; set; }} = new {propertySymbol.Type.OriginalDefinition}();",
+                            };
+                        }
+                    }
+                    return null;
+                default:
+                    return null;
+
+            }
+        }
+
+        public string GetScaffoldedRequestTypeName(string originalName, string namingTemplate, GeneratedRequestType requestType)
+        {
+            return namingTemplate
+                .Replace("{BaseClassName}", originalName)
+                .Replace("{RequestType}", requestType.ToString());
+        }
+
+        public string GetScaffoldedResponseTypeName(string originalName, string namingTemplate, GeneratedResponseType responseType)
+        {
+            var responseTypeName = responseType == GeneratedResponseType.Generic ? "" : responseType.ToString();
+            return namingTemplate
+                .Replace("{BaseClassName}", originalName)
+                .Replace("{ResponseType}", responseTypeName);
+        }
+
+        internal ScaffoldedDto ScaffoldRequestDto(GeneratedRequestType requestType, TypeScaffoldingInfo scaffoldingInfo)
+        {
+            AutoDtoConfigurationAttribute activeConfig = scaffoldingInfo.ClassConfiguration ?? configuration;
+
+            var includePropertiesByDefault = (activeConfig.RequestTypesIncludingAllPropertiesByDefault | requestType) > 0;
+            var dtoName = GetScaffoldedRequestTypeName(scaffoldingInfo.BaseType.Name, activeConfig.RequestDtoNamingTemplate, requestType);
+            var scaffoldedDto = new ScaffoldedDto
+            {
+                IsRequestType = true,
+                RequestType = requestType,
+                BaseClassName = scaffoldingInfo.BaseType.Name,
+                ClassName = dtoName,
+                ClassFileName = $"{dtoName}.cs",
+                Properties = new List<ScaffoldedMember>()
+            };
+            foreach (var property in scaffoldingInfo.Properties)
+            {
+                if (property.IgnoreAttribute != null 
+                    && (property.IgnoreAttribute.RequestTypesWherePropertyIsIgnored | requestType) > 0)
+                {
+                    continue;
+                }
+                var includeAttributeApplies = property.IncludeAttribute != null 
+                    && (property.IncludeAttribute.RequestTypesWherePropertyIsIncluded | requestType) > 0;
+                if (includeAttributeApplies || includePropertiesByDefault)
+                {
+                    var scaffoldedProperty = GetScaffoldedProperty(property);
+                    if (scaffoldedProperty != null)
+                    {
+                        scaffoldedDto.Properties.Add(scaffoldedProperty);
                     }
                 }
-                sourceBuilder.AppendLine("\t}");
-                sourceBuilder.AppendLine("}");
-                sourceBuilder.AppendLine("");
-                sourceBuilder.AppendLine("#nullable restore");
-                var source = sourceBuilder.ToString();
-                dtos.Add(new ScaffoldedDto
-                {
-                    ClassFileName = $"{scaffoldType.Name}Dto.cs",
-                    SourceCode = source,
-                });
             }
-            return dtos;
+            return scaffoldedDto;
+        }
+
+        internal ScaffoldedDto ScaffoldResponseDto(GeneratedResponseType responseType, TypeScaffoldingInfo scaffoldingInfo)
+        {
+            AutoDtoConfigurationAttribute activeConfig = scaffoldingInfo.ClassConfiguration ?? configuration;
+
+            var includePropertiesByDefault = (activeConfig.ResponseTypesIncludingAllPropertiesByDefault | responseType) > 0;
+            var dtoName = GetScaffoldedResponseTypeName(scaffoldingInfo.BaseType.Name, activeConfig.ResponseDtoNamingTemplate, responseType);
+            var scaffoldedDto = new ScaffoldedDto
+            {
+                IsRequestType = false,
+                ResponseType = responseType,
+                BaseClassName = scaffoldingInfo.BaseType.Name,
+                ClassName = dtoName,
+                ClassFileName = $"{dtoName}.cs",
+                Properties = new List<ScaffoldedMember>()
+            };
+            foreach (var property in scaffoldingInfo.Properties)
+            {
+                if (property.IgnoreAttribute != null
+                    && (property.IgnoreAttribute.ResponseTypesWherePropertyIsIgnored | responseType) > 0)
+                {
+                    continue;
+                }
+                var includeAttributeApplies = property.IncludeAttribute != null
+                    && (property.IncludeAttribute.ResponseTypesWherePropertyIsIncluded | responseType) > 0;
+                if (includeAttributeApplies || includePropertiesByDefault)
+                {
+                    var scaffoldedProperty = GetScaffoldedProperty(property);
+                    if (scaffoldedProperty != null)
+                    {
+                        scaffoldedDto.Properties.Add(scaffoldedProperty);
+                    }
+                }
+            }
+            return scaffoldedDto;
         }
 
         public INamedTypeSymbol? RecurseNamespaceForTypeWithBaseTypeName(INamespaceSymbol targetNamespace, string baseTypeName)

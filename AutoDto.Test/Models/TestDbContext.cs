@@ -11,10 +11,12 @@ namespace AutoDto.Test.Models
 {
     [AutoDtoConfiguration(
         ClassDiscoveryBehavior= ClassDiscoveryBehavior.ExcludeAll, 
-        DtoNameGeneratorType = typeof(DefaultDtoNameGenerator), 
-        RequestTypeDefaultMemberBehaviorResolver = typeof(DefaultRequestTypeDefaultBehaviorResolver), 
-        RequestTypes = GeneratedRequestType.Create, 
-        ResponseTypes = GeneratedResponseType.All)]
+        RequestDtoNamingTemplate = "{RequestType}{BaseClassName}RequestTEST",
+        ResponseDtoNamingTemplate = "{ResponseType}{BaseClassName}ResponseTEST",
+        GenerateRequestTypes = GeneratedRequestType.Create, 
+        GenerateResponseTypes = GeneratedResponseType.All,
+        RequestTypesIncludingAllPropertiesByDefault = GeneratedRequestType.None,
+        ResponseTypesIncludingAllPropertiesByDefault = GeneratedResponseType.All)]
     internal class TestDbContext : DbContext
     {
         public virtual DbSet<TestClass1> TestClass1 { get; set; }

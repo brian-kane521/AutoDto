@@ -1,5 +1,4 @@
-﻿using AutoDtoConfig.Interfaces;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -9,18 +8,22 @@ namespace AutoDtoConfig.Attributes
     public class AutoDtoConfigurationAttribute : Attribute
     {
         public ClassDiscoveryBehavior ClassDiscoveryBehavior { get; set; }
-        public Type DtoNameGeneratorType { get; set; }
-        public Type RequestTypeDefaultMemberBehaviorResolver { get; set; }
-        public GeneratedRequestType RequestTypes { get; set; }
-        public GeneratedResponseType ResponseTypes { get; set; }
+        public string RequestDtoNamingTemplate { get; set; }
+        public string ResponseDtoNamingTemplate { get; set; }
+        public GeneratedRequestType GenerateRequestTypes { get; set; }
+        public GeneratedResponseType GenerateResponseTypes { get; set; }
+        public GeneratedRequestType RequestTypesIncludingAllPropertiesByDefault { get; set; }
+        public GeneratedResponseType ResponseTypesIncludingAllPropertiesByDefault { get; set; }
 
         public AutoDtoConfigurationAttribute()
         {
             ClassDiscoveryBehavior = ClassDiscoveryBehavior.Default;
-            DtoNameGeneratorType = typeof(DefaultDtoNameGenerator);
-            RequestTypeDefaultMemberBehaviorResolver = typeof(DefaultRequestTypeDefaultBehaviorResolver);
-            RequestTypes = GeneratedRequestType.Default;
-            ResponseTypes = GeneratedResponseType.Default;
+            RequestDtoNamingTemplate = "{RequestType}{BaseClassName}Request";
+            ResponseDtoNamingTemplate = "{ResponseType}{BaseClassName}Response";
+            GenerateRequestTypes = GeneratedRequestType.Default;
+            GenerateResponseTypes = GeneratedResponseType.Default;
+            RequestTypesIncludingAllPropertiesByDefault = GeneratedRequestType.All;
+            ResponseTypesIncludingAllPropertiesByDefault = GeneratedResponseType.All;
         }
     }
 }

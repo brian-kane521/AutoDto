@@ -12,6 +12,6 @@ namespace AutoDtoConfig.Attributes
         Delete = 8,
         All = Create | Read | Update | Delete,
         Generic = 16,
-        Default = Generic,
+        Default = All,
     }
 }

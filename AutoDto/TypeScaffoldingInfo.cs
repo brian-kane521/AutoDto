@@ -10,6 +10,7 @@ namespace AutoDto
     internal class TypeScaffoldingInfo
     {
         public ITypeSymbol BaseType { get; set; } = null!;
+        public AutoDtoConfigurationAttribute? ClassConfiguration { get; set; }
         public AutoDtoIgnoreAttribute? IgnoreAttribute { get; set; }
         public AutoDtoIncludeAttribute? IncludeAttribute { get; set; }
         public List<PropertyScaffoldingInfo> Properties { get; set; } = new List<PropertyScaffoldingInfo>();
@@ -17,9 +18,7 @@ namespace AutoDto
 
     internal class ScaffoldedMember
     {
-        public string BaseTypeDeclaration { get; set; } = null!;
-        public string TypeDeclarationSuffix { get; set; } = string.Empty;
-        public string BaseName { get; set; } = null!;
-        public string ValueInitializer { get; set; } = string.Empty;
+        public string TypeName { get; set; } = null!;
+        public string Template { get; set; } = null!;
     }
 }
