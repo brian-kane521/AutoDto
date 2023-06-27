@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 namespace AutoDto.Test.Models
 {
-    [AutoDtoInclude]
     internal class TestClass1
     {
         public int TestInt { get; set; }

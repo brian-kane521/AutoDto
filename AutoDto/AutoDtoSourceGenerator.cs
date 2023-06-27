@@ -56,7 +56,7 @@ namespace AutoDto
                 foreach (var scaffoldInfo in typesToScaffold)
                 {
                     var excludedByIgnore = scaffoldInfo.IgnoreAttribute != null
-                            && (scaffoldInfo.IgnoreAttribute.RequestTypesWherePropertyIsIgnored | requestType) > 0;
+                            && (scaffoldInfo.IgnoreAttribute.RequestTypesWherePropertyIsIgnored & requestType) > 0;
                     if (excludedByIgnore)
                     {
                         continue;
@@ -79,7 +79,7 @@ namespace AutoDto
                 foreach (var scaffoldInfo in typesToScaffold)
                 {
                     var excludedByIgnore = scaffoldInfo.IgnoreAttribute != null
-                            && (scaffoldInfo.IgnoreAttribute.ResponseTypesWherePropertyIsIgnored | responseType) > 0;
+                            && (scaffoldInfo.IgnoreAttribute.ResponseTypesWherePropertyIsIgnored & responseType) > 0;
                     if (excludedByIgnore)
                     {
                         continue;
@@ -170,7 +170,7 @@ namespace AutoDto
                 GeneratedRequestType.Update, 
                 GeneratedRequestType.Delete })
             {
-                if ((requestType | configuration.GenerateRequestTypes) > 0)
+                if ((requestType & configuration.GenerateRequestTypes) > 0)
                 {
                     requestTypes.Add(requestType);
                 }
@@ -188,7 +188,7 @@ namespace AutoDto
                 GeneratedResponseType.Delete,
                 GeneratedResponseType.Generic })
             {
-                if ((requestType | configuration.GenerateResponseTypes) > 0)
+                if ((requestType & configuration.GenerateResponseTypes) > 0)
                 {
                     requestTypes.Add(requestType);
                 }
@@ -394,7 +394,7 @@ namespace AutoDto
         {
             AutoDtoConfigurationAttribute activeConfig = scaffoldingInfo.ClassConfiguration ?? configuration;
 
-            var includePropertiesByDefault = (activeConfig.RequestTypesIncludingAllPropertiesByDefault | requestType) > 0;
+            var includePropertiesByDefault = (activeConfig.RequestTypesIncludingAllPropertiesByDefault & requestType) > 0;
             var dtoName = GetScaffoldedRequestTypeName(scaffoldingInfo.BaseType.Name, activeConfig.RequestDtoNamingTemplate, requestType);
             var scaffoldedDto = new ScaffoldedDto
             {
@@ -408,12 +408,12 @@ namespace AutoDto
             foreach (var property in scaffoldingInfo.Properties)
             {
                 if (property.IgnoreAttribute != null 
-                    && (property.IgnoreAttribute.RequestTypesWherePropertyIsIgnored | requestType) > 0)
+                    && (property.IgnoreAttribute.RequestTypesWherePropertyIsIgnored & requestType) > 0)
                 {
                     continue;
                 }
                 var includeAttributeApplies = property.IncludeAttribute != null 
-                    && (property.IncludeAttribute.RequestTypesWherePropertyIsIncluded | requestType) > 0;
+                    && (property.IncludeAttribute.RequestTypesWherePropertyIsIncluded & requestType) > 0;
                 if (includeAttributeApplies || includePropertiesByDefault)
                 {
                     var scaffoldedProperty = GetScaffoldedProperty(property);
@@ -430,7 +430,7 @@ namespace AutoDto
         {
             AutoDtoConfigurationAttribute activeConfig = scaffoldingInfo.ClassConfiguration ?? configuration;
 
-            var includePropertiesByDefault = (activeConfig.ResponseTypesIncludingAllPropertiesByDefault | responseType) > 0;
+            var includePropertiesByDefault = (activeConfig.ResponseTypesIncludingAllPropertiesByDefault & responseType) > 0;
             var dtoName = GetScaffoldedResponseTypeName(scaffoldingInfo.BaseType.Name, activeConfig.ResponseDtoNamingTemplate, responseType);
             var scaffoldedDto = new ScaffoldedDto
             {
@@ -444,12 +444,12 @@ namespace AutoDto
             foreach (var property in scaffoldingInfo.Properties)
             {
                 if (property.IgnoreAttribute != null
-                    && (property.IgnoreAttribute.ResponseTypesWherePropertyIsIgnored | responseType) > 0)
+                    && (property.IgnoreAttribute.ResponseTypesWherePropertyIsIgnored & responseType) > 0)
                 {
                     continue;
                 }
                 var includeAttributeApplies = property.IncludeAttribute != null
-                    && (property.IncludeAttribute.ResponseTypesWherePropertyIsIncluded | responseType) > 0;
+                    && (property.IncludeAttribute.ResponseTypesWherePropertyIsIncluded & responseType) > 0;
                 if (includeAttributeApplies || includePropertiesByDefault)
                 {
                     var scaffoldedProperty = GetScaffoldedProperty(property);

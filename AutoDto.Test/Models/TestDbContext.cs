@@ -9,14 +9,16 @@ using AutoDtoConfig;
 
 namespace AutoDto.Test.Models
 {
+    //[AutoDtoConfiguration(
+    //    ClassDiscoveryBehavior= ClassDiscoveryBehavior.ExcludeAll, 
+    //    RequestDtoNamingTemplate = "{RequestType}{BaseClassName}RequestTEST",
+    //    ResponseDtoNamingTemplate = "{ResponseType}{BaseClassName}ResponseTEST",
+    //    GenerateRequestTypes = GeneratedRequestType.Create, 
+    //    GenerateResponseTypes = GeneratedResponseType.All,
+    //    RequestTypesIncludingAllPropertiesByDefault = GeneratedRequestType.None,
+    //    ResponseTypesIncludingAllPropertiesByDefault = GeneratedResponseType.All)]
     [AutoDtoConfiguration(
-        ClassDiscoveryBehavior= ClassDiscoveryBehavior.ExcludeAll, 
-        RequestDtoNamingTemplate = "{RequestType}{BaseClassName}RequestTEST",
-        ResponseDtoNamingTemplate = "{ResponseType}{BaseClassName}ResponseTEST",
-        GenerateRequestTypes = GeneratedRequestType.Create, 
-        GenerateResponseTypes = GeneratedResponseType.All,
-        RequestTypesIncludingAllPropertiesByDefault = GeneratedRequestType.None,
-        ResponseTypesIncludingAllPropertiesByDefault = GeneratedResponseType.All)]
+        GenerateResponseTypes = GeneratedResponseType.Generic)]
     internal class TestDbContext : DbContext
     {
         public virtual DbSet<TestClass1> TestClass1 { get; set; }

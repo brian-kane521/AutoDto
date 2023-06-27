@@ -10,8 +10,9 @@ namespace AutoDtoConfig.Attributes
         Read = 2,
         Update = 4,
         Delete = 8,
-        All = Create | Read | Update | Delete,
+        AllExceptGeneric = Create | Read | Update | Delete,
+        All = Create | Read | Update | Delete | Generic,
         Generic = 16,
-        Default = All,
+        Default = AllExceptGeneric,
     }
 }

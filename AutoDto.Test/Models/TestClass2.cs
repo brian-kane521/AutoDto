@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 namespace AutoDto.Test.Models
 {
-    [AutoDtoConfiguration(RequestTypesIncludingAllPropertiesByDefault=GeneratedRequestType.All)]
     internal class TestClass2
     {
         public int? TestNullableInt { get; set; }
