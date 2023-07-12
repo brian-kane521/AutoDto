@@ -6,10 +6,18 @@
     <Authors>Brian Kane</Authors>
     <Description>AutoDtoConfig provides C# attributes for configuring the behavior of AutoDto.</Description>
     <PackageProjectUrl>https://github.com/brian-kane521/AutoDto/</PackageProjectUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/brian-kane521/AutoDto/</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageId>AutoEfDto.AutoDtoConfig</PackageId>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="https:\github.com\brian-kane521\AutoDto\" />
+    <None Update="README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
