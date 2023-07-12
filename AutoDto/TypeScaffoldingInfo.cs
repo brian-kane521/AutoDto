@@ -15,10 +15,4 @@ namespace AutoDto
         public AutoDtoIncludeAttribute? IncludeAttribute { get; set; }
         public List<PropertyScaffoldingInfo> Properties { get; set; } = new List<PropertyScaffoldingInfo>();
     }
-
-    internal class ScaffoldedMember
-    {
-        public string TypeName { get; set; } = null!;
-        public string Template { get; set; } = null!;
-    }
 }
