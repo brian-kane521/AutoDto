@@ -13,6 +13,6 @@ namespace AutoDtoConfig.Attributes
         AllExceptGeneric = Create | Read | Update | Delete,
         All = Create | Read | Update | Delete | Generic,
         Generic = 16,
-        Default = AllExceptGeneric,
+        Default = Generic,
     }
 }
