@@ -12,6 +12,8 @@
     <PackageTags>DTO;scaffolding;data transfer object;request and response mapping;c#;code generator;</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageId>AutoEfDto</PackageId>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageProjectUrl>https://github.com/brian-kane521/AutoDto/</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>
@@ -21,6 +23,10 @@
   
   <ItemGroup>
     <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
   
   <ItemGroup>
