@@ -15,10 +15,10 @@ Generated classes support recursion - for instance, if you have a class named `C
 AutoDto is packaged using nuget, [hosted at this link.](https://www.nuget.org/packages/AutoEfDto/)
 
 To install, open a terminal in your project directory and run the following:
-`dotnet add package AutoEfDto --version 1.0.1`
+`dotnet add package AutoEfDto --version 1.0.2`
 
 Or in the Visual Studio Package Manager Console:
-`NuGet\Install-Package AutoEfDto -Version 1.0.1`
+`NuGet\Install-Package AutoEfDto -Version 1.0.2`
 
 ## Basic Usage
 
