@@ -11,6 +11,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageId>AutoEfDto.AutoDtoConfig</PackageId>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>

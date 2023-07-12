@@ -17,6 +17,8 @@
     <RepositoryUrl>https://github.com/brian-kane521/AutoDto/</RepositoryUrl>
     <Description>AutoDto is a C# source generator for scaffolding basic data transfer object (DTO) classes from database model classes.</Description>
     <RepositoryType>git</RepositoryType>
+    <Version>1.0.1</Version>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
