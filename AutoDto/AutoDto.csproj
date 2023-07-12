@@ -7,6 +7,11 @@
     <CompilerGeneratedFilesOutputPath>Generated</CompilerGeneratedFilesOutputPath>
     <IsRoslynComponent>true</IsRoslynComponent>
     <LangVersion>latest</LangVersion>
+    <Title>AutoDto</Title>
+    <Authors>Brian Kane</Authors>
+    <PackageTags>DTO;scaffolding;data transfer object;request and response mapping;c#;code generator;</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageId>AutoEfDto</PackageId>
   </PropertyGroup>
 
   <ItemGroup>
