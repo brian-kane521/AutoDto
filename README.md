@@ -122,7 +122,7 @@ public enum ClassDiscoveryBehavior
 }
 ```
 
-`IncludeAllDbSets` is the default, instructing AutoDto to generate DTOs for all types for which there is a `DbSet` within the `DbContext`, **except** those marked with an [AutoDtoIgnore](#ignore-attribute) attribute.
+`IncludeAllDbSets` is the default value, instructing AutoDto to generate DTOs for all types for which there is a `DbSet` within the `DbContext`, **except** those marked with an [AutoDtoIgnore](#ignore-attribute) attribute.
 `ExcludeAll` will cause AutoDto to only generate DTOs for classes marked with an [AutoDtoInclude](#include-attribute) attribute. Note AutoDto will still only discover classes for which there is a `DbSet`.
 
 #### Request Naming Convention
