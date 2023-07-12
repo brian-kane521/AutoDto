@@ -14,6 +14,7 @@
     <PackageId>AutoEfDto</PackageId>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageProjectUrl>https://github.com/brian-kane521/AutoDto/</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/brian-kane521/AutoDto/</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
