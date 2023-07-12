@@ -1,7 +1,15 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Title>AutoDtoConfig</Title>
+    <Authors>Brian Kane</Authors>
+    <Description>AutoDtoConfig provides C# attributes for configuring the behavior of AutoDto.</Description>
+    <PackageProjectUrl>https://github.com/brian-kane521/AutoDto/</PackageProjectUrl>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="https:\github.com\brian-kane521\AutoDto\" />
+  </ItemGroup>
 
 </Project>
