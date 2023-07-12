@@ -203,7 +203,7 @@ When present on a class, DTOs **will not** be generated for that class regardles
 When present on a property, that property will not be included in any request DTOs specified by the `RequestTypesWherePropertyIsIgnored` parameter nor any response DTOs specified by the `ResponseTypesWherePropertyIsIgnored` parameter.
 The `[AutoDtoIgnore]` attribute without any parameters is equivalent to the following:
 ```cs
-[Ignore(
+[AutoDtoIgnore(
     RequestTypesWherePropertyIsIgnored = GeneratedRequestType.All,
     ResponseTypesWherePropertyIsIgnored = GeneratedResponseType.All)]
 ```
@@ -218,7 +218,7 @@ When present on a class, DTOs **will** be generated for that class regardless of
 When present on a property, that property will only be included in request DTOs specified by the `RequestTypesWherePropertyIsIncluded` parameter as well as response DTOs specified by the `ResponseTypesWherePropertyIsIncluded` parameter, **unless AutoDto is configured to include all properties by default**. This attribute is meant to be used when AutoDto is configured globally or for the class containing the property **not to include all properties** (see [Properties Included in Requests](#properties-included-in-requests) and [Properties Included in Responses](#properties-included-in-responses))
 The `[AutoDtoInclude]` attribute without any parameters is equivalent to the following:
 ```cs
-[Ignore(
+[AutoDtoInclude(
     RequestTypesWherePropertyIsIncluded = GeneratedRequestType.All,
     ResponseTypesWherePropertyIsIncluded = GeneratedResponseType.All)]
 ```
