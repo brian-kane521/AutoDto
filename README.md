@@ -50,7 +50,7 @@ internal class ParentClass
 }
 ```
 
-In its default configuration, AutoDto would generate separate Create, Read, Update, and Delete request DTOs as follows:
+In its default configuration, AutoDto would generate separate Create and Update request DTOs as follows:
 ```cs
 // CreateChildClassRequest.cs
 public partial class CreateChildClassRequest
@@ -65,6 +65,21 @@ public partial class CreateParentClassRequest
     public int Id { get; set; }
     public CreateChildClassRequest? FavoriteChild { get; set; } = null!;
     public ICollection<CreateChildClassRequest> Children { get; set; } = new List<CreateChildClassRequest>();
+}
+
+// UpdateChildClassRequest.cs
+public partial class UpdateChildClassRequest
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+}
+
+// UpdateParentClassRequest.cs
+public partial class CreateParentClassRequest
+{
+    public int Id { get; set; }
+    public UpdateChildClassRequest? FavoriteChild { get; set; } = null!;
+    public ICollection<UpdateChildClassRequest> Children { get; set; } = new List<UpdateChildClassRequest>();
 }
 ```
 As well as a generic response DTO for each type:
