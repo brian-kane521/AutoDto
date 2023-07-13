@@ -75,7 +75,7 @@ public partial class UpdateChildClassRequest
 }
 
 // UpdateParentClassRequest.cs
-public partial class CreateParentClassRequest
+public partial class UpdateParentClassRequest
 {
     public int Id { get; set; }
     public UpdateChildClassRequest? FavoriteChild { get; set; } = null!;
